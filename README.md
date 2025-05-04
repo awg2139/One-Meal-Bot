@@ -16,5 +16,5 @@
 - python(Streamlit)
 - Streamlit Community Cloud
 
-#라이선스
+# 라이선스
 -미정
