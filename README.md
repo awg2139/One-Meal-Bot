@@ -12,12 +12,12 @@
 - 오름차순, 내림차순으로 정렬해 볼 수 있다.
 
 ## 사용할 도구
-- python
-코드 구현
-- python(Streamlit)
-ui 구현
-- Streamlit Community Cloud
-서버 구현..?
+- python 
+/ 코드 구현
+- python(Streamlit) 
+/ ui 구현
+- Streamlit Community Cloud 
+/ 서버 구현..?
 
 ### 라이선스
 -미정
