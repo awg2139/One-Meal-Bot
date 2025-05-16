@@ -1,11 +1,7 @@
-#첫 화면
-
 import streamlit as st
 
-
-title_container = st.empty()
-button_container = st.empty()
-
+Logo = st.empty()
+button_box = st.empty()
 
 st.markdown(
     """
@@ -37,12 +33,12 @@ st.markdown(
 )
 
 
-if "hide_content" not in st.session_state:
-    st.session_state.hide_content = False
+if "Clicksv" not in st.session_state:
+    st.session_state.Clicksv = False
 
 
-if not st.session_state.hide_content:
-    with title_container:
+if not st.session_state.Clicksv:
+    with Logo:
         st.markdown("""
             <div class='centered-title-wrapper'>
                 <h1>ONE</h1>
@@ -51,7 +47,7 @@ if not st.session_state.hide_content:
             </div>
         """, unsafe_allow_html=True)
 
-    with button_container:
+    with button_box:
         if st.button("시작하기 ▶"):
-            st.session_state.hide_content = True
+            st.session_state.Clicksv = True
             st.rerun()
