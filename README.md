@@ -21,3 +21,5 @@
 
 ### 라이선스
 -미정
+
+- 이 프로젝트는 [`translate`](https://github.com/terryyin/translate-python) 라이브러리를 사용하였으며, MIT 라이선스를 따릅니다.
