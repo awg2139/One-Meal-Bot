@@ -72,7 +72,7 @@ else:
     st.markdown("---") # 구분선선
 
     st.title("One Meal Bot")
-    foodSh = st.text_input("음식 이름을 입력하세요", placeholder="ex) 김치찌개")
+    foodSh = st.text_input("한국어로 음식 이름을 입력해주세요", placeholder="ex) 김치찌개")
 
     # 버튼 두 개 배치치
     tg1, tg2 = st.columns(2)
@@ -80,6 +80,17 @@ else:
         if st.button("검색"):
             st.session_state.search_clicked = True
             st.session_state.show_result = True
+
+            # This project uses the 'translate' library:
+            # https://github.com/terryyin/translate-python
+            # Licensed under the MIT License
+            
+            # 값을 영어로 저장해둠. 
+            from translate import Translator
+            translator = Translator(from_lang="ko", to_lang="en")
+            en_food = translator.translate(foodSh)
+            st.session_state.en_food = en_food  
+
     with tg2:
         if st.button("세부사항"):
             st.session_state.show_detail = not st.session_state.show_detail
@@ -105,6 +116,11 @@ else:
                 st.image("https://via.placeholder.com/100", width=100)
             with cols[1]:
                 st.write(f"음식 설명 {i+1}")
+
+        # 영어 확인 테스트
+        # ✅ 영어 번역된 음식 이름 보여주기 (선택)
+        if "en_food" in st.session_state:
+            st.markdown(f"** 영어 번역: ** `{st.session_state.en_food}`")
 
         # 새로고침 버튼
         st.markdown("---")
