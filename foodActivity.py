@@ -1,4 +1,13 @@
+
 import streamlit as st
+from sklearn_pandas import DataFrameMapper
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+
+
+@st.cache_data
+def FoodData():
+    return pd.read_csv("food.csv", encoding="cp949")
 
 if "hide_content" not in st.session_state:
     st.session_state.hide_content = False
@@ -73,7 +82,7 @@ else:
             st.session_state.show_detail = not st.session_state.show_detail
 
     if st.session_state.show_detail:
-        st.markdown("## 📋 음식별 칼로리를 입력해주세요.")
+        st.markdown("## 음식별 칼로리를 입력해주세요.")
         for i in range(5):
             cols = st.columns([0.2, 0.8])
             with cols[0]:
@@ -81,18 +90,32 @@ else:
             with cols[1]:
                 st.text_input("칼로리", placeholder="예: 250 kcal", key=f"kcal{i}", disabled=not checked)
 
-    if st.session_state.show_result:
-        st.markdown("## 🧾 검색 결과")
+if st.session_state.show_result:
+    st.markdown("## 검색 결과")
 
-        for i in range(3):
-            cols = st.columns([0.3, 0.7])
-            with cols[0]:
-                st.image("https://via.placeholder.com/100", width=100)
-            with cols[1]:
-                st.write(f"음식 설명 {i+1}")
+    data = FoodData()
+    search = food_input.strip()
 
-        st.markdown("---")
-        if st.button("처음으로 돌아가기"):
-            for key in list(st.session_state.keys()):
-                del st.session_state[key]
-            st.experimental_rerun()
+    if search:
+        filtered = data[data["식품명"].str.contains(search, case=False, na=False)]
+
+        if not filtered.empty:
+            for i, row in filtered.iterrows():
+                st.markdown(f"###  {row['식품명']}")
+
+                st.write(f"에너지: {row['에너지(kcal)']} kcal")
+                st.write(f"단백질: {row['단백질(g)']} g")
+                st.write(f"지방: {row['지방(g)']} g")
+                st.write(f"당류: {row['당류(g)']} g")
+                st.write(f"칼슘: {row['칼슘(mg)']} mg")
+                st.write(f"콜레스테롤: {row['콜레스테롤(mg)']} mg")
+                st.markdown("---")
+        else:
+            st.warning("검색 결과가 없습니다.")
+    else:
+        st.info("음식 이름을 입력해주세요.")
+
+    if st.button("처음으로 돌아가기"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.experimental_rerun()
