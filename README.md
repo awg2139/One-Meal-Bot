@@ -21,7 +21,7 @@
 - Streamlit Community Cloud 
 / 서버 구현..?
 
-# 사용한 라이선스
+## 사용한 라이선스
 - [Streamlit](https://github.com/streamlit/streamlit) (Apache License 2.0)
 - [Pandas](https://github.com/pandas-dev/pandas) (BSD 3-Clause)
 - [Scikit-learn](https://github.com/scikit-learn/scikit-learn) (BSD 3-Clause)
@@ -34,3 +34,11 @@
 -미정
 
 - 이 프로젝트는 [`translate`](https://github.com/terryyin/translate-python) 라이브러리를 사용하였으며, MIT 라이선스를 따릅니다.
+
+## 데이터 출처
+본 프로젝트에서 사용한 식품 영양성분 데이터는
+공공데이터포털에서 제공하는
+전국 통합 식품영양성분정보 표준 데이터셋을 기반으로 하였습니다.
+
+해당 데이터의 저작권은 식품의약품안전처에 있으며,
+공공데이터 이용조건에 따라 자유롭게 활용하되, 출처를 명시해야 합니다.
