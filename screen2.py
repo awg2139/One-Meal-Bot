@@ -1,8 +1,13 @@
 import streamlit as st
+from sklearn_pandas import DataFrameMapper
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+import numpy as np
 
-# 첫 번째 화면 
+@st.cache_data
+def FoodData():
+    return pd.read_csv("food.csv", encoding="cp949")
 
-# 화면 전환을 위해 초기화화
 if "hide_content" not in st.session_state:
     st.session_state.hide_content = False
 if "search_clicked" not in st.session_state:
@@ -11,8 +16,9 @@ if "show_detail" not in st.session_state:
     st.session_state.show_detail = False
 if "show_result" not in st.session_state:
     st.session_state.show_result = False
+if "mode" not in st.session_state:
+    st.session_state.mode = None
 
-# 시작화면 로고 스타일 
 st.markdown(
     """
     <style>
@@ -36,18 +42,21 @@ st.markdown(
             background-color: OrangeRed;
             display: block;
             margin: 50px auto 0 auto;
+            transition: all 0.1s ease-in-out;
+        }
+        .stButton>button:active {
+            color: white;
+            background-color: #cc3300;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# ui 첫 장면 생성성
 if not st.session_state.hide_content:
     title_container = st.empty()
     button_container = st.empty()
 
-    # 로고 불러오기.
     with title_container:
         st.markdown("""
             <div class='centered-title-wrapper'>
@@ -57,74 +66,230 @@ if not st.session_state.hide_content:
             </div>
         """, unsafe_allow_html=True)
 
-    # 버튼 영역 만들기기
     with button_container:
         if st.button("시작하기 ▶"):
             st.session_state.hide_content = True
+            st.session_state.mode = None
+            st.session_state.show_detail = False
+            st.session_state.show_result = False
             st.rerun()
-          
-# 두 번째 화면 
 
-# 시작하기 버튼이 눌러 졌을 경우우
 else:
-    #위에 로고 생성
-    st.markdown("<h1 style='text-align:center;'>ONE<br>MEAL BOT</h1>", unsafe_allow_html=True)
-    st.markdown("---") # 구분선선
+    st.markdown("<h1 style='text-align:center;'>ONE<br>MEAL - BOT</h1>", unsafe_allow_html=True)
+    st.markdown("---")
 
     st.title("One Meal Bot")
-    foodSh = st.text_input("한국어로 음식 이름을 입력해주세요", placeholder="ex) 김치찌개")
+    food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
 
-    # 버튼 두 개 배치치
-    tg1, tg2 = st.columns(2)
-    with tg1:
+    # 모드 선택 버튼 (세부사항 / 자동맞춤형)
+    col1, col2, col3 = st.columns([1, 1, 2])
+    with col1:
+        btn_manual = st.button("세부사항")
+    with col2:
+        btn_auto = st.button("자동맞춤형")
+    with col3:
         if st.button("검색"):
             st.session_state.search_clicked = True
             st.session_state.show_result = True
 
-            # This project uses the 'translate' library:
-            # https://github.com/terryyin/translate-python
-            # Licensed under the MIT License
-            
-            # 값을 영어로 저장해둠. 
-            from translate import Translator
-            translator = Translator(from_lang="ko", to_lang="en")
-            en_food = translator.translate(foodSh)
-            st.session_state.en_food = en_food  
+    # 세부사항 버튼 클릭시 토글 
+    if btn_manual:
+        if st.session_state.mode == "manual":
+            st.session_state.mode = None
+            st.session_state.show_detail = False
+        else:
+            st.session_state.mode = "manual"
+            st.session_state.show_detail = True
 
-    with tg2:
-        if st.button("세부사항"):
-            st.session_state.show_detail = not st.session_state.show_detail
+    # 자동맞춤형 버튼 클릭시 토글 
+    if btn_auto:
+        if st.session_state.mode == "auto":
+            st.session_state.mode = None
+        else:
+            st.session_state.mode = "auto"
+            st.session_state.show_detail = False
 
-        # 세부사항 버튼을 눌렀을 경우에만 보임임
-        if st.session_state.show_detail:
-            st.markdown("## 📋 음식별 칼로리를 입력해주세요.")
-            for i in range(5):
-                cols = st.columns([0.2, 0.8])  # ✅ tgs → cols
-                with cols[0]:
-                    checked = st.checkbox(f"항목 {i+1}", key=f"chk{i}")  # ✅ checkBx → checked
-                # 체크된 경우에만 입력 가능 
-                with cols[1]:
-                    st.text_input("칼로리", placeholder="예: 250 kcal", key=f"kcal{i}", disabled=not checked)
+    # 자동맞춤형 UI
+    if st.session_state.mode == "auto":
+        st.markdown("### 나에게 맞는 하루 칼로리 계산기 🍱")
 
-    # 검색 결과 출력 
-    if st.session_state.show_result:
-        st.markdown("## 🧾 검색 결과")
+        age = st.number_input("나이", min_value=1, max_value=120, step=1)
+        gender = st.radio("성별", ["남성", "여성"], horizontal=True)
+        height = st.number_input("키 (cm)", min_value=100, max_value=250, step=1)
+        weight = st.number_input("몸무게 (kg)", min_value=20, max_value=200, step=1)
 
-        for i in range(3):
-            cols = st.columns([0.3, 0.7])
-            with cols[0]:
-                st.image("https://via.placeholder.com/100", width=100)
-            with cols[1]:
-                st.write(f"음식 설명 {i+1}")
+        st.markdown("**활동량 선택 (1~5단계)**")
+        activityLevel = st.slider("활동량", min_value=1, max_value=5)
 
-        # 영어 확인 테스트
-        # ✅ 영어 번역된 음식 이름 보여주기 (선택)
-        if "en_food" in st.session_state:
-            st.markdown(f"** 영어 번역: ** `{st.session_state.en_food}`")
+        st.markdown("**오늘 이미 먹은 식사를 선택하세요**")
+        eatenMeals = st.multiselect("먹은 식사", ["아침", "점심", "저녁"])
 
-        # 새로고침 버튼
         st.markdown("---")
-        if st.button("처음으로 돌아가기"):
-            for k in list(st.session_state.keys()):
-                del st.session_state[k]
-            st.experimental_rerun()
+        st.markdown(" 입력된 정보를 바탕으로 하루 권장 칼로리를 계산하고")
+        st.markdown(" 아직 먹지 않은 끼니별 칼로리를 자동 분배하여 음식 추천 예정입니다.")
+
+    # 세부사항 목록 복구 
+    st.session_state.show_detail = st.session_state.mode == "manual"
+
+
+# 세부사항 변수 초기화 ( 이름만 입력할 시 문제 방지 )
+chk_energy = st.session_state.get("chk_energy", False)
+val_energy = st.session_state.get("val_energy", "")
+chk_protein = st.session_state.get("chk_protein", False)
+val_protein = st.session_state.get("val_protein", "")
+chk_fat = st.session_state.get("chk_fat", False)
+val_fat = st.session_state.get("val_fat", "")
+chk_sugar = st.session_state.get("chk_sugar", False)
+val_sugar = st.session_state.get("val_sugar", "")
+chk_calcium = st.session_state.get("chk_calcium", False)
+val_calcium = st.session_state.get("val_calcium", "")
+chk_cholesterol = st.session_state.get("chk_cholesterol", False)
+val_cholesterol = st.session_state.get("val_cholesterol", "")
+
+# 세부사항 
+if st.session_state.show_detail:
+    st.markdown("## 원하는 영양소양을 입력해주세요.")
+
+    col1, col2 = st.columns([0.3, 0.7]) # 열 끼리 차지하는 크기 설정정
+    with col1:
+        chk_energy = st.checkbox("에너지(kcal)", key="chk_energy")
+    with col2:
+        val_energy = st.text_input("에너지 입력", placeholder="예: 250", key="val_energy", disabled=not chk_energy)
+
+    col1, col2 = st.columns([0.3, 0.7]) 
+    with col1:
+        chk_protein = st.checkbox("단백질(g)", key="chk_protein")
+    with col2:
+        val_protein = st.text_input("단백질 입력", placeholder="예: 10", key="val_protein", disabled=not chk_protein)
+
+    col1, col2 = st.columns([0.3, 0.7]) 
+    with col1:
+        chk_fat = st.checkbox("지방(g)", key="chk_fat")
+    with col2:
+        val_fat = st.text_input("지방 입력", placeholder="예: 5", key="val_fat", disabled=not chk_fat)
+
+    col1, col2 = st.columns([0.3, 0.7]) 
+    with col1:
+        chk_sugar = st.checkbox("당류(g)", key="chk_sugar")
+    with col2:
+        val_sugar = st.text_input("당류 입력", placeholder="예: 3", key="val_sugar", disabled=not chk_sugar)
+
+    col1, col2 = st.columns([0.3, 0.7])
+    with col1:
+        chk_calcium = st.checkbox("칼슘(mg)", key="chk_calcium")
+    with col2:
+        val_calcium = st.text_input("칼슘 입력", placeholder="예: 100", key="val_calcium", disabled=not chk_calcium)
+
+    col1, col2 = st.columns([0.3, 0.7])
+    with col1:
+        chk_cholesterol = st.checkbox("콜레스테롤(mg)", key="chk_cholesterol")
+    with col2:
+        val_cholesterol = st.text_input("콜레스테롤 입력", placeholder="예: 50", key="val_cholesterol", disabled=not chk_cholesterol)
+
+if st.session_state.show_result:
+
+    def numTrue(value):
+        return value.strip().isdigit()
+
+    numT = False
+
+    if chk_energy and val_energy.strip() and not numTrue(val_energy):
+        st.warning("에너지에는 숫자만 입력해주세요.")
+        numT = True
+    if chk_protein and val_protein.strip() and not numTrue(val_protein):
+        st.warning("단백질에는 숫자만 입력해주세요.")
+        numT = True
+    if chk_fat and val_fat.strip() and not numTrue(val_fat):
+        st.warning("지방에는 숫자만 입력해주세요.")
+        numT = True
+    if chk_sugar and val_sugar.strip() and not numTrue(val_sugar):
+        st.warning("당류에는 숫자만 입력해주세요.")
+        numT = True
+    if chk_calcium and val_calcium.strip() and not numTrue(val_calcium):
+        st.warning("칼슘에는 숫자만 입력해주세요.")
+        numT = True
+    if chk_cholesterol and val_cholesterol.strip() and not numTrue(val_cholesterol):
+        st.warning("콜레스테롤에는 숫자만 입력해주세요.")
+        numT = True
+
+    st.markdown("## 검색 결과")
+
+    data = FoodData()
+    search = food_input.strip()
+
+    if not numT:
+        if search:
+            filtered = data[data["식품명"].str.contains(search, case=False, na=False)]
+        else:
+            filtered = data.copy()
+
+        nutrientDic = {
+            "chk_energy": ("val_energy", "에너지(kcal)"),
+            "chk_protein": ("val_protein", "단백질(g)"),
+            "chk_fat": ("val_fat", "지방(g)"),
+            "chk_sugar": ("val_sugar", "당류(g)"),
+            "chk_calcium": ("val_calcium", "칼슘(mg)"),
+            "chk_cholesterol": ("val_cholesterol", "콜레스테롤(mg)")
+        }
+
+        pickNutrient = []        # 영양소소 수치값 리스트
+        compareNutrient = []     # 그에 대응하는 영양소 이름들
+
+        for chk_key, (val_key, col_name) in nutrientDic.items():
+            if st.session_state.get(chk_key) and st.session_state.get(val_key, "").strip().isdigit():
+                pickNutrient.append(float(st.session_state[val_key].strip()))
+                compareNutrient.append(col_name)
+
+        if compareNutrient:
+            filtered = filtered.dropna(subset=compareNutrient).copy()
+            for col in compareNutrient:
+                filtered[col] = pd.to_numeric(filtered[col], errors='coerce')
+
+            filtered[compareNutrient] = filtered[compareNutrient].fillna(0)  #  NaN을 0으로 처리
+
+            pickNutrient_np = np.array(pickNutrient)
+
+            filtered["유사도"] = filtered[compareNutrient].apply(
+                lambda row: np.linalg.norm(row.values - pickNutrient_np), axis=1
+            )
+
+            filtered = filtered.sort_values("유사도").reset_index(drop=True)
+
+            best_match = filtered.iloc[0]
+            st.success(f"\U0001F4A1 입력한 값들과 가장 유사한 음식: **{best_match['식품명']}**")
+            for col in compareNutrient:
+                st.write(f"✔️ {col}: {best_match[col]}")
+            st.markdown("---")
+
+        if filtered.empty:
+            st.warning("검색 결과가 없습니다.")
+        else:
+            st.markdown("---")
+            for i, row in filtered.iterrows():
+                st.markdown(f"###  {row['식품명']}")
+                st.write(f"에너지: {row['에너지(kcal)']} kcal")
+                st.write(f"단백질: {row['단백질(g)']} g")
+                st.write(f"지방: {row['지방(g)']} g")
+                st.write(f"당류: {row['당류(g)']} g")
+                st.write(f"칼슘: {row['칼슘(mg)']} mg")
+                st.write(f"콜레스테롤: {row['콜레스테롤(mg)']} mg")
+                st.markdown("---")
+
+    if st.button("처음으로 돌아가기"):
+        resetValue = [
+            "search_clicked", "show_detail", "show_result",
+            "chk_energy", "val_energy",
+            "chk_protein", "val_protein",
+            "chk_fat", "val_fat",
+            "chk_sugar", "val_sugar",
+            "chk_calcium", "val_calcium",
+            "chk_cholesterol", "val_cholesterol"
+        ]
+
+        for k in resetValue:
+            if k in st.session_state:
+                del st.session_state[k]  
+
+        st.rerun()
+
+
