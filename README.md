@@ -26,11 +26,11 @@
 - [Pandas](https://github.com/pandas-dev/pandas) (BSD 3-Clause)
 - [Scikit-learn](https://github.com/scikit-learn/scikit-learn) (BSD 3-Clause)
 - [sklearn-pandas](https://github.com/scikit-learn-contrib/sklearn-pandas) (MIT License)
+- [NumPy](https://github.com/numpy/numpy) (BSD 3-Clause)
 
+`NumPy`는 BSD 3-Clause 라이선스를 따릅니다.  
+자세한 내용은 [NumPy LICENSE](https://github.com/numpy/numpy/blob/main/LICENSE.txt) 를 참조하세요.
 
 `sklearn-pandas`는 MIT 라이선스를 따릅니다. .  
 자세한 내용은 [sklearn-pandas LICENSE](https://github.com/scikit-learn-contrib/sklearn-pandas/blob/master/LICENSE) 을 참조하세요.
-### 라이선스
--미정
 
-- 이 프로젝트는 [`translate`](https://github.com/terryyin/translate-python) 라이브러리를 사용하였으며, MIT 라이선스를 따릅니다.
