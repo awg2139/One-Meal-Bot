@@ -42,3 +42,13 @@
 해당 데이터의 저작권은 식품의약품안전처에 있으며,
 공공데이터 이용조건에 따라 자유롭게 활용하되, 출처를 명시해야 합니다.
 
+
+본 프로젝트는 MIT 라이선스를 따릅니다.  
+또한 다음과 같은 오픈소스 라이브러리를 사용하며, 각 라이브러리는 해당 라이선스를 따릅니다:
+- Streamlit (Apache 2.0)
+- Pandas, Scikit-learn, NumPy (BSD 3-Clause)
+- sklearn-pandas (MIT)
+
+자세한 내용은 [LICENSE](./LICENSE) 및 [LICENSES.md](./LICENSES.md)를 참조해주세요.
+
+
