@@ -256,7 +256,26 @@ if st.session_state.show_result:
                 st.markdown(f"### {meal} 추천 ({int(target_kcal)} kcal 기준)")
                 filtered = data.dropna(subset=["에너지(kcal)"]).copy()
                 filtered["에너지(kcal)"] = pd.to_numeric(filtered["에너지(kcal)"], errors='coerce')
-                filtered = filtered[filtered["식품대분류명"] != "조미식품류"]  # 식사에 비식사류 선택 방지 
+                
+                # 음식 이름 입력값이 있으면 해당 이름 포함하는 것만 필터링
+                if food_input.strip():
+                    filtered = filtered[filtered["식품명"].str.contains(food_input.strip(), case=False, na=False)]
+
+                
+                # 조미료, 양념류 제외
+                filtered = filtered[
+                    ~filtered["식품대분류명"].isin(["조미식품류", "장류, 양념류"])
+                ]
+
+                # 식사에 추가 되면 안되는 것들 
+                filtered = filtered[
+                    ~filtered["식품명"].str.contains("기름|소스|장|드레싱|분말|액젓|마요네즈|쌈장", na=False)
+                ]
+                # 점심, 저녁에는 빵이나 디저트류 제외 
+                if meal in ["점심", "저녁"]:
+                    exclude_if_lunch_or_dinner = ["빵 및 과자류", "디저트류", "음료 및 차류", "유제품류 및 빙과류" , "음료 및 주류류", "아침식사용 대체식품", "아이스크림류", "시리얼류"]
+                    filtered = filtered[~filtered["식품대분류명"].isin(exclude_if_lunch_or_dinner)]
+                    
                 filtered["유사도"] = abs(filtered["에너지(kcal)"] - target_kcal)
                 filtered = filtered.sort_values("유사도").reset_index(drop=True)
                 if filtered.empty:
