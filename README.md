@@ -24,8 +24,8 @@
 / 코드 구현
 - python(Streamlit) 
 / ui 구현
-- Streamlit Community Cloud 
-/ 서버 구현..?
+- Streamlit Community Cloud
+/ 프론트엔드 서버
 
 ## 사용한 라이선스
 - [Streamlit](https://github.com/streamlit/streamlit) (Apache License 2.0)
