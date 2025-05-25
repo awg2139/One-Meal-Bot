@@ -82,12 +82,12 @@ else:
     food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
 
     # 모드 선택 버튼 (세부사항 / 자동맞춤형)
-    col1, col2, col3 = st.columns([1, 1, 2])
-    with col1:
+    col1, col2, col3 = st.columns([2, 2, 2])
+    with col3:
         btn_manual = st.button("세부사항")
     with col2:
         btn_auto = st.button("자동맞춤형")
-    with col3:
+    with col1:
         if st.button("검색"):
             st.session_state.search_clicked = True
             st.session_state.show_result = True
