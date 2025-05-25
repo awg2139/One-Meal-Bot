@@ -34,12 +34,6 @@
 - [sklearn-pandas](https://github.com/scikit-learn-contrib/sklearn-pandas) (MIT License)
 - [NumPy](https://github.com/numpy/numpy) (BSD 3-Clause)
 
-`NumPy`는 BSD 3-Clause 라이선스를 따릅니다.  
-자세한 내용은 [NumPy LICENSE](https://github.com/numpy/numpy/blob/main/LICENSE.txt) 를 참조하세요.
-
-`sklearn-pandas`는 MIT 라이선스를 따릅니다. .  
-자세한 내용은 [sklearn-pandas LICENSE](https://github.com/scikit-learn-contrib/sklearn-pandas/blob/master/LICENSE) 을 참조하세요.
-
 ## 데이터 출처
 본 프로젝트에서 사용한 식품 영양성분 데이터는
 공공데이터포털에서 제공하는
