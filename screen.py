@@ -79,25 +79,30 @@ else:
     st.markdown("---")
 
     st.title("One Meal Bot")
-    food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
+    with st.form("search_form"):
+        col_input, col_search = st.columns([5, 1])
+        with col_input:
+            food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
+
+        with col_search:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.form_submit_button("검색"):
+                st.session_state.search_clicked = True
+                st.session_state.show_result = True
+
+                if st.session_state.mode == "auto":
+                    st.session_state.search_mode = "auto"
+                elif st.session_state.mode == "manual":
+                    st.session_state.search_mode = "manual"
+                else:
+                    st.session_state.search_mode = None
 
     # 모드 선택 버튼 (세부사항 / 자동맞춤형)
-    col1, col2, col3 = st.columns([2, 2, 2])
-    with col3:
+    col1, col2 = st.columns([2, 2])
+    with col1:
         btn_manual = st.button("세부사항")
     with col2:
         btn_auto = st.button("자동맞춤형")
-    with col1:
-        if st.button("검색"):
-            st.session_state.search_clicked = True
-            st.session_state.show_result = True
-
-            if st.session_state.mode == "auto":
-                st.session_state.search_mode = "auto"
-            elif st.session_state.mode == "manual":
-                st.session_state.search_mode = "manual"
-            else:
-                st.session_state.search_mode = None
 
     # 세부사항 버튼 클릭시 토글 
     if btn_manual:
