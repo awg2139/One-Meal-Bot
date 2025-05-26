@@ -79,25 +79,30 @@ else:
     st.markdown("---")
 
     st.title("One Meal Bot")
-    food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
+    with st.form("search_form"):
+        col_input, col_search = st.columns([5, 1])
+        with col_input:
+            food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
+
+        with col_search:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.form_submit_button("검색"):
+                st.session_state.search_clicked = True
+                st.session_state.show_result = True
+
+                if st.session_state.mode == "auto":
+                    st.session_state.search_mode = "auto"
+                elif st.session_state.mode == "manual":
+                    st.session_state.search_mode = "manual"
+                else:
+                    st.session_state.search_mode = None
 
     # 모드 선택 버튼 (세부사항 / 자동맞춤형)
-    col1, col2, col3 = st.columns([2, 2, 2])
-    with col3:
+    col1, col2 = st.columns([2, 2])
+    with col1:
         btn_manual = st.button("세부사항")
     with col2:
         btn_auto = st.button("자동맞춤형")
-    with col1:
-        if st.button("검색"):
-            st.session_state.search_clicked = True
-            st.session_state.show_result = True
-
-            if st.session_state.mode == "auto":
-                st.session_state.search_mode = "auto"
-            elif st.session_state.mode == "manual":
-                st.session_state.search_mode = "manual"
-            else:
-                st.session_state.search_mode = None
 
     # 세부사항 버튼 클릭시 토글 
     if btn_manual:
@@ -118,6 +123,18 @@ else:
 
     # 자동맞춤형 UI -----------------------------
     if st.session_state.mode == "auto":
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        # 자동맞춤형 설명란
+        st.warning("""
+                   ❗ 이 기능은 BMR을 계산하여 맞춤형으로 음식을 검색해줍니다.
+                   \n
+                   ❗ 세부사항을 입력한 후 검색 버튼을 눌러주세요.
+                   """)
+        #st.warning("❗ 세부사항을 입력한 후 검색 버튼을 눌러주세요.")
+     
+        st.markdown("<br>", unsafe_allow_html=True)
+
         st.markdown("### 나에게 맞는 하루 칼로리 계산기")
 
         age = st.number_input("나이", min_value=1, max_value=120, step=1)
@@ -139,6 +156,19 @@ else:
 
         st.markdown("**오늘 이미 먹은 식사를 선택하세요**")
         eatenMeals = st.multiselect("먹은 식사", ["아침", "점심", "저녁"])
+
+        col4 = st.columns([1, 2, 1])
+        with col4[1]:
+            if st.button("검색",key="bmr_search_auto_bottom"):
+                st.session_state.search_clicked = True
+                st.session_state.show_result = True
+
+                if st.session_state.mode == "auto":
+                    st.session_state.search_mode = "auto"
+                elif st.session_state.mode == "manual":
+                    st.session_state.search_mode = "manual"
+                else:
+                    st.session_state.search_mode = None
 
         # BMR 계산
         if gender == "남성":
@@ -217,6 +247,19 @@ if st.session_state.show_detail:
         chk_cholesterol = st.checkbox("콜레스테롤(mg)", key="chk_cholesterol")
     with col2:
         val_cholesterol = st.text_input("콜레스테롤 입력", placeholder="예: 50", key="val_cholesterol", disabled=not chk_cholesterol)
+
+    col5 = st.columns([1, 2, 1])
+    with col5[1]:
+        if st.button("검색",key="detail_search_auto_bottom"):
+            st.session_state.search_clicked = True
+            st.session_state.show_result = True
+
+            if st.session_state.mode == "auto":
+                st.session_state.search_mode = "auto"
+            elif st.session_state.mode == "manual":
+                st.session_state.search_mode = "manual"
+            else:
+                    st.session_state.search_mode = None
 
 if st.session_state.show_result:
 
