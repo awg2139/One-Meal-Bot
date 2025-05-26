@@ -245,5 +245,3 @@ if st.session_state.show_result:
                 del st.session_state[k]  
 
         st.rerun()
-
-
