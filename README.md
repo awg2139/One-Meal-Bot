@@ -1,6 +1,6 @@
 # One-Meal-Bot
 
-##웹 사이트 링크
+## 웹 사이트 링크
 - https://one-meal-bot-5jmnbjhcwdpuqvpf8bqlmr.streamlit.app/
 
 ## 기능
