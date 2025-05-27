@@ -1,5 +1,8 @@
 # One-Meal-Bot
 
+##웹 사이트 링크
+https://one-meal-bot-5jmnbjhcwdpuqvpf8bqlmr.streamlit.app/
+
 ## 기능
 - 재료명이나 키워드는 **한국어**로만 입력 가능합니다.
 - 세부 필터 기능:
