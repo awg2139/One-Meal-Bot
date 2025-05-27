@@ -154,6 +154,15 @@ else:
             5: " 5 : 매우 높은 활동 (하루 2회 운동, 육체 노동 등)"
         }   
         st.markdown(f" 선택한 활동 수준 설명: {activity_desc[activityLevel]}")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("**※ 저당 혹은 고단백을 원할 시 체크 부탁드립니다.**")
+        col1, col2 = st.columns([1, 1]) #체크박스 배치
+        with col1:
+            check_lowSugar = st.checkbox("저당", key="lowSugar")
+        with col2:
+            check_highProtein = st.checkbox("고단백", key="highProtein")
+        st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown("**오늘 이미 먹은 식사를 선택하세요**")
         eatenMeals = st.multiselect("먹은 식사", ["아침", "점심", "저녁"])
@@ -330,6 +339,14 @@ if st.session_state.show_result:
                 filtered = data.dropna(subset=["에너지(kcal)"]).copy()
                 filtered["에너지(kcal)"] = pd.to_numeric(filtered["에너지(kcal)"], errors='coerce')
                 
+                #저당 5g 이하
+                if check_lowSugar:
+                    data = data[data["당류(g)"]>= 5]
+
+                #고단백 칼로리 100g당 10g 이상
+                if check_highProtein:
+                    data = data[data["단백질(g)"] / data["에너지(kcal)"] * 100 >= 10]
+
                 # 음식 이름 입력값이 있으면 해당 이름 포함하는 것만 필터링
                 if food_input.strip():
                     filtered = filtered[filtered["식품명"].str.contains(food_input.strip(), case=False, na=False)]
