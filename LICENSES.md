@@ -25,18 +25,4 @@
 
 ---
 
-## Scikit-learn
-- 라이선스: BSD 3-Clause  
-- 설명: 머신러닝 모델 학습 및 평가용 대표 라이브러리  
-- [GitHub 저장소](https://github.com/scikit-learn/scikit-learn)
-
----
-
-## sklearn-pandas
-- 라이선스: MIT License  
-- 설명: scikit-learn 모델과 pandas 프레임을 연동해주는 유틸리티  
-- [GitHub 저장소](https://github.com/scikit-learn-contrib/sklearn-pandas)
-
----
-
 각 라이브러리의 자세한 라이선스 전문은 해당 저장소의 LICENSE 파일을 참고해주세요.
