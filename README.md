@@ -1,44 +1,39 @@
 # One-Meal-Bot
 
-## 기능 
-- 한국어로 음식 입력
-- 영어로 번역해, 외국 음식 데이터베이스에서 검색
-- 영어 결과값, 한국어로 다시 변역해 ui로 보여준다.
+## 기능
+- 재료명이나 키워드는 **한국어**로만 입력 가능합니다.
+- 세부 필터 기능:
+  - 사용자가 원하는 키워드를 입력하고, 해당 키워드 및 선택한 영양소와 일치하는 음식을 추천합니다.
+  - 키워드를 생략해도 필터링이 가능합니다.
+- 여러 영양소를 선택하면 **유클리드 거리 기반 유사도 계산**을 통해 유사한 음식을 추천합니다.
+- 자동 맞춤형 식사 추천 기능:
+  - 사용자로부터 **성별, 나이, 키, 체중, 활동량**을 입력받아 **BMR**과 **TDEE**를 계산합니다.
+  - 제외할 식사 시간을 선택하면, 남은 식사에 **칼로리를 자동 분배**하여 음식을 추천합니다.
+  - 아침, 점심, 저녁 각각 하나의 음식을 추천하며, 점심과 저녁은 디저트류를 제외합니다.
+  - 활동량 기준은 하단 설명을 참조해 선택할 수 있습니다.
 
-- 사용자는 궁금한 칼로리, 성분 체크한 후 원하는 재료 입력
-- 그 재료와 키워드가 들어가는 음식을 찾아준다.
-- 크기가 비슷한 칼로리, 성분들을 추천해준다.
-- 음식을 안적고 세부사항만 적어도 된다. 
+---
 
-- 사용자가 칼로리, 성분 등을 직접 선택해 필터링 할 수 있습니다.
-- 오름차순, 내림차순으로 정렬해 볼 수 있다.
+## 구현 도구
+- **Python (Streamlit)** – 백엔드 및 UI 구현
+- **Streamlit Community Cloud** – 프론트엔드 서버 및 배포
 
-## 사용할 도구
-- python 
-/ 코드 구현
-- python(Streamlit) 
-/ ui 구현
-- Streamlit Community Cloud 
-/ 서버 구현..?
+---
 
-## 사용한 라이선스
-- [Streamlit](https://github.com/streamlit/streamlit) (Apache License 2.0)
-- [Pandas](https://github.com/pandas-dev/pandas) (BSD 3-Clause)
-- [Scikit-learn](https://github.com/scikit-learn/scikit-learn) (BSD 3-Clause)
-- [sklearn-pandas](https://github.com/scikit-learn-contrib/sklearn-pandas) (MIT License)
+## 라이선스 및 사용한 오픈소스
+- [Streamlit](https://github.com/streamlit/streamlit) (Apache License 2.0)  
+- [Pandas](https://github.com/pandas-dev/pandas) (BSD 3-Clause)  
+- [NumPy](https://github.com/numpy/numpy) (BSD 3-Clause)
 
-
-`sklearn-pandas`는 MIT 라이선스를 따릅니다. .  
-자세한 내용은 [sklearn-pandas LICENSE](https://github.com/scikit-learn-contrib/sklearn-pandas/blob/master/LICENSE) 을 참조하세요.
-### 라이선스
--미정
-
-- 이 프로젝트는 [`translate`](https://github.com/terryyin/translate-python) 라이브러리를 사용하였으며, MIT 라이선스를 따릅니다.
 
 ## 데이터 출처
-본 프로젝트에서 사용한 식품 영양성분 데이터는
-공공데이터포털에서 제공하는
-전국 통합 식품영양성분정보 표준 데이터셋을 기반으로 하였습니다.
+- 본 프로젝트에서 사용한 식품 영양성분 데이터는 **공공데이터포털**에서 제공하는  
+  **전국 통합 식품영양성분정보 표준 데이터셋**을 기반으로 합니다.
+- 데이터의 저작권은 **식품의약품안전처**에 있으며,  
+  공공데이터 이용 조건에 따라 자유롭게 활용하되 출처를 명시해야 합니다.
 
-해당 데이터의 저작권은 식품의약품안전처에 있으며,
-공공데이터 이용조건에 따라 자유롭게 활용하되, 출처를 명시해야 합니다.
+---
+
+## 전체 라이선스 안내
+- 본 프로젝트는 **MIT 라이선스**를 따릅니다.
+- 자세한 라이선스 내용은 [LICENSE](./LICENSE) 및 [LICENSES.md](./LICENSES.md)를 참조하세요.
