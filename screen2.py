@@ -75,29 +75,35 @@ if not st.session_state.hide_content:
             st.rerun()
 
 else:
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h1 style='text-align:center;'>ONE<br>MEAL - BOT</h1>", unsafe_allow_html=True)
     st.markdown("---")
-
+    
     st.title("One Meal Bot")
-    food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
+    with st.form("search_form"):
+        col_input, col_search = st.columns([5, 1])
+        with col_input:
+            food_input = st.text_input("음식 이름을 입력하세요", placeholder="예: 김치찌개")
+
+        with col_search:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.form_submit_button("검색"):
+                st.session_state.search_clicked = True
+                st.session_state.show_result = True
+
+                if st.session_state.mode == "auto":
+                    st.session_state.search_mode = "auto"
+                elif st.session_state.mode == "manual":
+                    st.session_state.search_mode = "manual"
+                else:
+                    st.session_state.search_mode = "basic"
 
     # 모드 선택 버튼 (세부사항 / 자동맞춤형)
-    col1, col2, col3 = st.columns([2, 2, 2])
-    with col3:
+    col1, col2 = st.columns([2, 2])
+    with col1:
         btn_manual = st.button("세부사항")
     with col2:
         btn_auto = st.button("자동맞춤형")
-    with col1:
-        if st.button("검색"):
-            st.session_state.search_clicked = True
-            st.session_state.show_result = True
-
-            if st.session_state.mode == "auto":
-                st.session_state.search_mode = "auto"
-            elif st.session_state.mode == "manual":
-                st.session_state.search_mode = "manual"
-            else:
-                st.session_state.search_mode = None
 
     # 세부사항 버튼 클릭시 토글 
     if btn_manual:
@@ -118,6 +124,18 @@ else:
 
     # 자동맞춤형 UI -----------------------------
     if st.session_state.mode == "auto":
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        # 자동맞춤형 설명란
+        st.warning("""
+                   ❗ 이 기능은 BMR을 계산하여 맞춤형으로 음식을 검색해줍니다.
+                   \n
+                   ❗ 세부사항을 입력한 후 검색 버튼을 눌러주세요.
+                   """)
+        #st.warning("❗ 세부사항을 입력한 후 검색 버튼을 눌러주세요.")
+     
+        st.markdown("<br>", unsafe_allow_html=True)
+
         st.markdown("### 나에게 맞는 하루 칼로리 계산기")
 
         age = st.number_input("나이", min_value=1, max_value=120, step=1)
@@ -139,6 +157,19 @@ else:
 
         st.markdown("**오늘 이미 먹은 식사를 선택하세요**")
         eatenMeals = st.multiselect("먹은 식사", ["아침", "점심", "저녁"])
+
+        col4 = st.columns([1, 2, 1])
+        with col4[1]:
+            if st.button("검색",key="bmr_search_auto_bottom"):
+                st.session_state.search_clicked = True
+                st.session_state.show_result = True
+
+                if st.session_state.mode == "auto":
+                    st.session_state.search_mode = "auto"
+                elif st.session_state.mode == "manual":
+                    st.session_state.search_mode = "manual"
+                else:
+                    st.session_state.search_mode = None
 
         # BMR 계산
         if gender == "남성":
@@ -218,7 +249,50 @@ if st.session_state.show_detail:
     with col2:
         val_cholesterol = st.text_input("콜레스테롤 입력", placeholder="예: 50", key="val_cholesterol", disabled=not chk_cholesterol)
 
+    col5 = st.columns([1, 2, 1])
+    with col5[1]:
+        if st.button("검색",key="detail_search_auto_bottom"):
+            st.session_state.search_clicked = True
+            st.session_state.show_result = True
+
+            if st.session_state.mode == "auto":
+                st.session_state.search_mode = "auto"
+            elif st.session_state.mode == "manual":
+                st.session_state.search_mode = "manual"
+            else:
+                    st.session_state.search_mode = None
+
 if st.session_state.show_result:
+    # 기본 검색 
+    if st.session_state.get("search_mode") == "basic":
+        search = food_input.strip()
+        data = FoodData()
+
+        if search:
+            filtered = data[data["식품명"].str.contains(search, case=False, na=False)]
+        else:
+            st.warning("❌ 음식 이름을 입력해주세요. ❌")
+            st.stop()
+
+        filtered = filtered.dropna(subset=["에너지(kcal)"]).copy()
+        filtered["에너지(kcal)"] = pd.to_numeric(filtered["에너지(kcal)"], errors='coerce')
+        filtered = filtered.sample(n=min(30, len(filtered)), random_state=42).reset_index(drop=True)
+        
+        if filtered.empty:
+            st.warning("해당 검색어에 대한 결과가 없습니다.")
+        else:
+            st.markdown("## 검색 결과")
+            st.success(f"🔍 검색 결과: **{filtered.shape[0]}개 음식 발견**")
+            for i, row in filtered.head(30).iterrows(): 
+                st.markdown(f"### {row['식품명']}")
+                st.write(f"에너지: {row['에너지(kcal)']} kcal")
+                st.write(f"단백질: {row['단백질(g)']} g")
+                st.write(f"지방: {row['지방(g)']} g")
+                st.write(f"당류: {row['당류(g)']} g")
+                st.write(f"칼슘: {row['칼슘(mg)']} mg")
+                st.write(f"콜레스테롤: {row['콜레스테롤(mg)']} mg")
+                st.markdown("---")
+
 
     def numTrue(value):
         return value.strip().isdigit()
@@ -247,7 +321,6 @@ if st.session_state.show_result:
 
     # 검색 결과 -----------------------------
     if st.session_state.show_result:
-        st.markdown("## 검색 결과")
         data = FoodData()
 
         # 자동 맞춤형 식단
@@ -256,12 +329,12 @@ if st.session_state.show_result:
                 st.markdown(f"### {meal} 추천 ({int(target_kcal)} kcal 기준)")
                 filtered = data.dropna(subset=["에너지(kcal)"]).copy()
                 filtered["에너지(kcal)"] = pd.to_numeric(filtered["에너지(kcal)"], errors='coerce')
-
+                
                 # 음식 이름 입력값이 있으면 해당 이름 포함하는 것만 필터링
                 if food_input.strip():
                     filtered = filtered[filtered["식품명"].str.contains(food_input.strip(), case=False, na=False)]
 
-
+                
                 # 조미료, 양념류 제외
                 filtered = filtered[
                     ~filtered["식품대분류명"].isin(["조미식품류", "장류, 양념류"])
@@ -275,7 +348,7 @@ if st.session_state.show_result:
                 if meal in ["점심", "저녁"]:
                     exclude_if_lunch_or_dinner = ["빵 및 과자류", "디저트류", "음료 및 차류", "유제품류 및 빙과류" , "음료 및 주류류", "아침식사용 대체식품", "아이스크림류", "시리얼류"]
                     filtered = filtered[~filtered["식품대분류명"].isin(exclude_if_lunch_or_dinner)]
-
+                    
                 filtered["유사도"] = abs(filtered["에너지(kcal)"] - target_kcal)
                 filtered = filtered.sort_values("유사도").reset_index(drop=True)
                 if filtered.empty:
@@ -328,6 +401,7 @@ if st.session_state.show_result:
                     compareNutrient.append(col_name)
 
             if compareNutrient:
+                st.markdown("## 검색 결과")
                 filtered = filtered.dropna(subset=compareNutrient).copy()
                 for col in compareNutrient:
                     filtered[col] = pd.to_numeric(filtered[col], errors='coerce')
@@ -340,7 +414,7 @@ if st.session_state.show_result:
                 filtered = filtered.sort_values("유사도").reset_index(drop=True)
 
                 if filtered.empty:
-                    st.warning("죄솝합니다. 음식을 찾을 수 없습니다. 음식 이름을 다시 입력해주세요요.")
+                    st.warning("죄송합니다. 음식을 찾을 수 없습니다. 음식 이름을 다시 입력해주세요.")
                 else:
                     best_match = filtered.iloc[0]
                     st.success(f"\U0001F4A1 입력한 값들과 가장 유사한 음식: **{best_match['식품명']}**")
@@ -348,7 +422,7 @@ if st.session_state.show_result:
                         st.write(f" {col}: {best_match[col]}")
                     st.markdown("---")
 
-                    for i, row in filtered.iterrows():
+                    for i, row in filtered.head(30).iterrows():
                         st.markdown(f"###  {row['식품명']}")
                         st.write(f"에너지: {row['에너지(kcal)']} kcal")
                         st.write(f"단백질: {row['단백질(g)']} g")
