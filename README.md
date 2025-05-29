@@ -40,3 +40,6 @@
 ## 전체 라이선스 안내
 - 본 프로젝트는 **MIT 라이선스**를 따릅니다.
 - 자세한 라이선스 내용은 [LICENSE](./LICENSE) 및 [LICENSES.md](./LICENSES.md)를 참조하세요.
+
+- 본 프로젝트는 **MIT 라이선스**를 따르지만, 사용된 일부 라이브러리는 어피치와 BSD 3-Clause License를 따릅니다.
+  
